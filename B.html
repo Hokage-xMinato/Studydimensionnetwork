@@ -895,6 +895,18 @@
                 grid-template-columns: 1fr;
             }
         }
+         /* --- STYLES FOR THE BACKGROUND IFRAME --- */
+        #backgroundAnimationFrame {
+            position: fixed; /* Keep it in the same place even if the user scrolls */
+            top: 0;
+            left: 0;
+            width: 100%;    /* Make it tiny */
+            height: 100%;   /* Make it tiny */
+            opacity: 0.4;    /* Make it completely invisible */
+            pointer-events: none; /* Crucial: Prevents any mouse/touch interaction */
+            z-index: -1;   /* Send it behind all other content */
+            border: none;  /* Remove any default iframe border */
+        }
     </style>
 </head>
 <body>
