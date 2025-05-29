@@ -894,6 +894,18 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        #backgroundAnimationFrame {
+            position: fixed; /* Keep it in the same place even if the user scrolls */
+            top: 0;
+            left: 0;
+            width: 100%;    /* Make it tiny */
+            height: 100%;   /* Make it tiny */
+            opacity: 0.4;    /* Make it completely invisible */
+            pointer-events: none; /* Crucial: Prevents any mouse/touch interaction */
+            z-index: -1;   /* Send it behind all other content */
+            border: none;  /* Remove any default iframe border */
+        }
     </style>
 </head>
 <body>
@@ -936,7 +948,9 @@ document.addEventListener('keydown', function(event) {
     </header>
 
     <!-- Background Animation -->
-    <div class="background-animation" id="backgroundAnimation"></div>
+    <iframe id="backgroundAnimationFrame" src="flappy.html" frameborder="0"></iframe>
+
+    
 
     <!-- Hero Section -->
     <section class="hero">
