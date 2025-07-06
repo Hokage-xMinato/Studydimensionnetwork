@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full-Screen Dynamic Content</title>
+    <!-- Tailwind CSS CDN (though custom CSS will override most of it for full screen) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%; /* Ensure html and body take full viewport height */
+            overflow: hidden; /* Prevent scrollbars if iframe slightly overflows */
+            font-family: "Inter", sans-serif;
+            background-color: #f0f4f8; /* Fallback background */
+        }
+
+        /* Custom CSS for the colorful border and full-screen container */
+        .colorful-border-container {
+            width: 100%;
+            height: 100%;
+            display: flex; /* Use flex to center content if needed, though iframe will fill */
+            justify-content: center;
+            align-items: center;
+            /* Gradient border using border-image */
+            border-image: linear-gradient(to right, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #9400D3) 1;
+            border-style: solid;
+            border-width: 2px; /* Adjusted to be very thin */
+            border-radius: 0; /* No rounded corners for the full-screen container itself */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        /* Ensure the iframe itself fills its container */
+        .colorful-border-container iframe {
+            width: 100%;
+            height: 100%;
+            display: block; /* Remove extra space below iframe */
+            border: none; /* Remove default iframe border */
+        }
+    </style>
+</head>
+<body>
+    <!-- The full-screen container with the colorful border -->
+    <div class="colorful-border-container">
+        <!-- The outer iframe will load a data URI containing the inner iframe -->
+        <iframe id="obfuscatedIframe" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        // Get the outer iframe element
+        const outerIframe = document.getElementById('obfuscatedIframe');
+
+        // Define the base URL for the Studysmarter player
+        const iframeBaseUrl = "https://studysmarterplayer.netlify.app/?url=";
+
+        // Function to get a URL parameter by name
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Get the 'url' parameter from the current page's URL
+        const userProvidedUrlParam = getUrlParameter('url');
+
+        // Construct the full URL for the *inner* iframe
+        let innerIframeTargetUrl = iframeBaseUrl;
+        if (userProvidedUrlParam) {
+            // Encode the user-provided parameter for the inner iframe's URL
+            innerIframeTargetUrl += encodeURIComponent(userProvidedUrlParam);
+        }
+
+        // Create a small HTML document that contains an iframe pointing to the target URL
+        // The inner iframe needs to fill its parent (the outer iframe's body)
+        const innerHtmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+                    iframe { width: 100%; height: 100%; border: none; }
+                </style>
+            </head>
+            <body>
+                <iframe src="${innerIframeTargetUrl}" frameborder="0" allowfullscreen></iframe>
+            </body>
+            </html>
+        `;
+
+        // Base64 encode the inner HTML content
+        const encodedHtml = btoa(innerHtmlContent); // btoa() is for Base64 encoding
+
+        // Set the outer iframe's src to a data URI containing the encoded HTML
+        outerIframe.src = `data:text/html;base64,${encodedHtml}`;
+    </script>
+</body>
+</html>
